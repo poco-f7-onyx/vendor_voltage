@@ -16,22 +16,17 @@
 #
 
 #$1=TARGET_DEVICE, $2=PRODUCT_OUT, $3=ZIP_FILENAME (relative to $2)
-
-existingOTAjson=./vendor/ota/$1.json
-output=$2/$1.json
+existingOTAjson=./vendor/OTAupdate/$1.json
+output=./out/target/product/$1/$1.json
 
 if [ ! -f "$existingOTAjson" ]; then
-	echo "createjson: no official support for $1 yet, add vendor/ota/$1.json first" >&2
-	exit 1
-fi
-
 maintainer=$(grep "\"maintainer\"" "$existingOTAjson" | cut -d ":" -f 2 | tr -d '",' | xargs)
 oem=$(grep "\"oem\"" "$existingOTAjson" | cut -d ":" -f 2 | tr -d '",' | xargs)
 device=$(grep "\"device\"" "$existingOTAjson" | cut -d ":" -f 2 | tr -d '",' | xargs)
 
 filename=$3
 version=$(echo "$3" | cut -d'-' -f2)
-download="https://sourceforge.net/projects/voltage-os/files/$1/$filename/download"
+download="https://sourceforge.net/projects/onyx-development/files/voltageos/17/$filename/download"
 timestamp=$(grep -m1 "ro.system.build.date.utc" "$2/system/build.prop" | cut -d'=' -f2)
 md5=$(md5sum "$2/$3" | cut -d' ' -f1)
 size=$(stat -c "%s" "$2/$3")
@@ -53,6 +48,6 @@ cat > "$output" <<EOF
   ]
 }
 EOF
-
+echo "./out/target/product/$1/$1.json"
 echo "$output"
 echo ""
